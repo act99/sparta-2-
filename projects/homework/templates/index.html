@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <!-- font CSS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap" rel="stylesheet">
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+
+    <title>스파르타코딩클럽 | 부트스트랩 연습하기</title>
+    <meta property="og:title" content="내 사이트의 제목"/>
+    <meta property="og:description" content="보고 있는 페이지의 내용 요약"/>
+    <meta property="og:image" content="{{ url_for('static', filename='ogimage.jpg') }}"/>
+    <style>
+        * {
+            font-family: 'Nanum Pen Script', cursive;
+        }
+
+        .wrap {
+            width: 1200px;
+            margin: auto;
+            padding: 50px;
+        }
+
+        .itemImage {
+            width: 900px;
+            height: 500px;
+            background-image: url("https://img.etnews.com/news/article/2021/05/26/cms_temp_article_26155823990264.jpg");
+            background-size: cover;
+            background-position: center;
+            margin: 0px auto 20px auto;
+        }
+
+        .descDiv {
+            width: 900px;
+            margin: auto;
+        }
+
+        .price {
+            font-size: 20px;
+            margin-left: 20px;
+        }
+
+        .rate {
+            font-size: 25px;
+            color: blue;
+        }
+
+        .btn {
+            width: 100px;
+            height: 40px;
+            display: block;
+            margin: auto;
+        }
+
+    </style>
+
+    <script>
+        $(document).ready(function () {
+            q1()
+            listing()
+        });
+
+        function q1() {
+            $.ajax({
+                type: "GET",
+                url: "http://spartacodingclub.shop/sparta_api/rate",
+                data: {},
+                success: function (response) {
+                    let rate = response["rate"]
+                    let temp_html = `<h3 class="rate">달러-원 환율: ${rate}</h3>`
+                    $("#rate_id").append(temp_html)
+
+                }
+            })
+        }
+
+        function listing() {
+            $.ajax({
+                type: "GET",
+                url: "/api",
+                data: {},
+                success: function (response) {
+                    let all_list = response['all_list']
+                    for (let i = 0; i < all_list.length; i++) {
+                        let name = all_list[i]['name']
+                        let count = all_list[i]['count']
+                        let address = all_list[i]['address']
+                        let phone = all_list[i]['phone']
+                        let temp_html = `<tr>
+                                          <th scope="row">${name}</th>
+                                          <td>${count}</td>
+                                          <td>${address}</td>
+                                          <td>${phone}</td>
+                                        </tr>`
+                        $("#order-body").append(temp_html)
+
+                    }
+                }
+            })
+        }
+
+        function saving() {
+            let name = $('#o_name').val()
+            let count = $('#o_count').val()
+            let address = $('#o_address').val()
+            let phone = $('#o_phone').val()
+            $.ajax({
+                type: "POST",
+                url: "/api",
+                data: {
+                    name_give: name,
+                    count_give: count,
+                    address_give: address,
+                    phone_give: phone
+                },
+                success: function (response) { // 성공하면
+                    // alert(response['msg'])
+                    window.location.reload()
+                }
+            })
+        }
+    </script>
+</head>
+
+<body>
+<div class="wrap">
+    <div class="itemImage"></div>
+    <div class="descDiv">
+        <div>
+            <h1>상품제목 <span class="price"> 가격: 1,000,000원 /개</span></h1>
+        </div>
+        <div>
+            <h5>이 상품으로 말할 것 같으면 용왕이 찾지 못한 토끼의 맥북을 찾아 빨간망토의 늑대와 아기돼지 삼형제의 숨결이 고루 녹아있는 사용하면 완전 빠른 이 상품이....</h5>
+
+        </div>
+        <div id="rate_id">
+        </div>
+        <form>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">주문자 이름</span>
+                </div>
+                <input type="text" class="form-control" aria-label="Default"
+                       aria-describedby="inputGroup-sizing-default" id="o_name">
+            </div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <label class="input-group-text" for="o_count">수량</label>
+                </div>
+                <select class="custom-select" id="o_count">
+                    <option selected>수량 선택</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                </select>
+            </div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">주소</span>
+                </div>
+                <input type="text" class="form-control" aria-label="Default"
+                       aria-describedby="inputGroup-sizing-default" id="o_address">
+            </div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">전화번호</span>
+                </div>
+                <input type="text" class="form-control" aria-label="Default"
+                       aria-describedby="inputGroup-sizing-default" id="o_phone">
+            </div>
+            <button class="btn" type="submit" onclick="saving()">제출하기</button>
+        </form>
+    </div>
+    <div>
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">주문자</th>
+                <th scope="col">수량</th>
+                <th scope="col">주소</th>
+                <th scope="col">전화번호</th>
+            </tr>
+            </thead>
+            <tbody id="order-body">
+
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+
+</html>
